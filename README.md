@@ -165,6 +165,14 @@ If you use this code or the curated phage–capsule table, please cite the paper
 
 ## Licence
 
-Code is released under the MIT Licence (`LICENSE`). The hand-curated
-phage–capsule table in `data/` is released under CC BY 4.0 — reuse it freely
-with attribution. Genome data are public NCBI records and carry their own terms.
+**Code** — MIT Licence, see `LICENSE`. That file is kept as plain MIT with
+nothing appended, so GitHub and Zenodo both detect it automatically; the
+data terms below are stated here instead.
+
+**Curated data** — the hand-curated phage–capsule evidence table
+(`data/phage_klocus_curated.csv` and its numbered variant) is released under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Reuse it freely with
+attribution; it represents the reading of 27 primary papers.
+
+**Genome data** — public NCBI records, subject to NCBI's own terms. None are
+redistributed here; only accession numbers.

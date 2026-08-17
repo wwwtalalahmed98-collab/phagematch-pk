@@ -19,16 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-NOTE ON DATA
-
-This licence covers the code in this repository. The hand-curated
-phage-capsule evidence table (data/phage_klocus_curated.csv and its numbered
-variant) is released separately under the Creative Commons Attribution 4.0
-International Licence (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
-
-Genome assemblies and metadata analysed here are public records obtained from
-NCBI and are subject to NCBI's own terms of use; none are redistributed in this
-repository.
