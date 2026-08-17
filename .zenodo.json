@@ -1,0 +1,38 @@
+{
+  "title": "PhageMatch-PK: capsule-type phage coverage analysis for Klebsiella pneumoniae",
+  "description": "<p>Analysis code for the study <em>Capsule types driving carbapenem-resistant Klebsiella pneumoniae in Pakistan are largely absent from the phage literature</em>.</p><p>Types the capsule (K) loci of 254 Pakistani clinical <em>K. pneumoniae</em> genomes and 475 comparison genomes from India, Bangladesh, Nepal, China, Europe and the USA; curates the published phage and depolymerase literature into a graded phage-capsule evidence table (34 records, 27 phages, 15 capsule types); and identifies capsule types with no published phage. Includes a BioProject-collapsed sensitivity analysis, since outbreak-derived genomes dominate public collections and can present clonal expansion as geographic signal.</p><p>No new sequence data were generated. All genomes are public NCBI assemblies.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Ahmed, Talal",
+      "affiliation": "Department of Biological and Health Sciences, Pak-Austria Fachhochschule Institute of Applied Sciences and Technology, Haripur, Pakistan"
+    },
+    {
+      "name": "Shah, Ahmed Hussain",
+      "affiliation": "Department of Biological and Health Sciences, Pak-Austria Fachhochschule Institute of Applied Sciences and Technology, Haripur, Pakistan"
+    }
+  ],
+  "keywords": [
+    "Klebsiella pneumoniae",
+    "bacteriophage",
+    "phage therapy",
+    "capsule",
+    "K locus",
+    "depolymerase",
+    "carbapenem resistance",
+    "antimicrobial resistance",
+    "Pakistan",
+    "South Asia",
+    "genomic epidemiology"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://www.ncbi.nlm.nih.gov/pathogens/",
+      "relation": "isDerivedFrom",
+      "resource_type": "dataset",
+      "scheme": "url"
+    }
+  ]
+}

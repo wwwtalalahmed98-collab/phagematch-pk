@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software or the curated phage-capsule table, please cite both the archived release and the paper."
+title: "PhageMatch-PK: capsule-type phage coverage analysis for Klebsiella pneumoniae"
+abstract: >-
+  Analysis code for a study of published bacteriophage coverage across the
+  capsule (K) types of Pakistani clinical Klebsiella pneumoniae, including a
+  curated phage-capsule evidence table and a BioProject-collapsed sensitivity
+  analysis of geographic capsule-type differences.
+type: software
+license: MIT
+# TODO before deposit: add ORCIDs (uncomment and fill).
+authors:
+  - given-names: Talal
+    family-names: Ahmed
+    email: B23S0131BMS004@fbse.paf-iast.edu.pk
+    affiliation: "Department of Biological and Health Sciences, Pak-Austria Fachhochschule Institute of Applied Sciences and Technology, Haripur, Pakistan"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+  - given-names: Ahmed Hussain
+    family-names: Shah
+    email: B23S0026BMS001@fbse.paf-iast.edu.pk
+    affiliation: "Department of Biological and Health Sciences, Pak-Austria Fachhochschule Institute of Applied Sciences and Technology, Haripur, Pakistan"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+keywords:
+  - Klebsiella pneumoniae
+  - bacteriophage
+  - phage therapy
+  - capsule
+  - K locus
+  - depolymerase
+  - carbapenem resistance
+  - antimicrobial resistance
+  - Pakistan
+  - South Asia
+repository-code: "https://github.com/wwwtalalahmed98-collab/phagematch-pk"
+version: "1.0.0"
+date-released: "2026-08-17"

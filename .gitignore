@@ -1,0 +1,41 @@
+# Large working directory lives outside the repo (D:\bacteriophage-data) and is
+# regenerable from the accession lists — never commit genomes or typing output.
+*.fna
+*.fna.gz
+*.fasta
+*.gbk
+*.zip
+
+# Cached API responses. Regenerable, and the Crossref cache in particular is
+# keyed to DOIs already recorded in the curated table.
+scripts/_crossref_meta.json
+scripts/_crossref_titles.json
+
+# Manuscript and correspondence are withheld until the paper is accepted. The
+# code, curated data, figures and supplementary tables are public so the
+# analysis can be checked and the Zenodo archive is complete; the narrative
+# text is not, and the cover letter is correspondence rather than research
+# output. Add the manuscript here after acceptance.
+docs/manuscript_draft.md
+docs/manuscript_submission.md
+docs/manuscript_submission.docx
+docs/manuscript_final.md
+docs/manuscript_final.docx
+docs/results_draft.md
+docs/cover_letter.md
+
+# Build products of the manuscript pipeline.
+*.pdf
+page-*.jpg
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

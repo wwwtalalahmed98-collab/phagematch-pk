@@ -1,0 +1,35 @@
+phage_name,k_locus,depolymerase_gene,evidence_level,host_origin,year,pmid,doi,note,ref_number
+P510,KL64,P510dep,depolymerase_characterized,China,2021,34156584,10.1007/s11262-021-01847-8,Recombinant P510dep degrades KL64 capsule; lysis spectrum matches phage host range,8
+SH-KP152410,KL64,K64-ORF41,depolymerase_characterized,China,2021,33535705,,Depolymerase specific for K64 serotype; proposed for capsular typing,9
+SH-KP152410,KL64,K64-ORF41,structure_solved,China,2024,38513899,,Structural and functional basis of K64-ORF41 capsule degradation,10
+phiK64-1,KL64,K64dep,depolymerase_characterized,Taiwan,2017,28077636,,Multi-host phage; 11 tail fibre/lyase genes covering K1 K11 K21 K25 K30 K35 K64 K69 KN4 KN5,11
+vB_KpP_TUN1,KL64,not_named,phage_host_confirmed,Tunisia,2021,34154528,,Lytic Autographiviridae phage specific for K64; capsule digestion inferred from halo,12
+vB_KpnP_IME1309,KL64,not_named,depolymerase_characterized,China,2025,40135928,,Phage depolymerase against ST11 K64 CRKP with in vivo therapeutic data,13
+unnamed_phage_Dep44,KL64,Dep44,depolymerase_characterized,China,2026,41547732,,Recombinant Dep44 protective in murine K64-CRKP pulmonary infection model,14
+unnamed_K64dep,KL64,K64dep,depolymerase_characterized,Taiwan,2014,25451047,,K64-specific depolymerase; enhanced serum and neutrophil killing in vitro,15
+PWKp9B,KL51,DpoK51-9B,depolymerase_characterized,not_stated,2025,41143416,,Anti-KL51 depolymerase from anti-ST16 phage; synergy with phage demonstrated,16
+Thai_sewage_phage_set,KL51,K51_depolymerase,depolymerase_characterized,Thailand,2021,34222050,,62 lytic phages isolated on K1 K2 K51 hosts; K51 depolymerase expressed and purified,17
+unnamed_K24_phage,KL24,not_named,phage_host_confirmed,Egypt,2020,32246126,,Lytic phage against K24 capsular type carbapenem-resistant K. pneumoniae,18
+unnamed_K24_phage_2025,KL24,not_named,phage_host_confirmed,not_stated,2025,40001401,,Novel phage against K24 capsular type MDR clinical isolates; anti-biofilm,19
+JKP2,KL17,not_named,phage_host_confirmed,not_stated,2023,36996938,,K-17 serotype specific phage with biofilm reduction potential,20
+UHKP,KL17,not_named,phage_host_confirmed,Pakistan,2026,41847192,,Isolated in Haripur KP Pakistan; narrow host range; one K-17 serotype strain lysed,21
+SBP,KL112,not_named,phage_host_confirmed,not_stated,2026,41931146,,Novel Klebsiella phage against K-112 serotype,22
+P929,KL19,not_named,phage_host_confirmed,China,2022,35307482,,Specifically lyses KL19 capsular type; halo indicates depolymerase activity,23
+unnamed_K19_depolymerase,KL19,not_named,depolymerase_characterized,not_stated,2022,35814656,,Novel depolymerase against K19-type K. pneumoniae,24
+KP-C01,KL102,tail_associated_depolymerase,depolymerase_characterized,not_stated,2026,42130957,,Tail-associated depolymerase activity against KL102 CRKP,25
+SF_KL25,KL25,not_named,genome_only,not_stated,2025,39912632,,Genome announcement only; no functional depolymerase characterisation reported,26
+phiK64-1,KL25,not_named,depolymerase_characterized,Taiwan,2017,28077636,,K25 among the capsular types covered by the phiK64-1 depolymerase panel,11
+phiK64-1,KL21,not_named,depolymerase_characterized,Taiwan,2017,28077636,,K21 among the capsular types covered by the phiK64-1 depolymerase panel,11
+phiK64-1,KL30,not_named,depolymerase_characterized,Taiwan,2017,28077636,,K30 among the capsular types covered by the phiK64-1 depolymerase panel,11
+phiK64-1,KL1,not_named,depolymerase_characterized,Taiwan,2017,28077636,,K1 among the capsular types covered by the phiK64-1 depolymerase panel,11
+Thai_sewage_phage_set,KL1,K1_depolymerase,depolymerase_characterized,Thailand,2021,34222050,,K1 depolymerase expressed and purified from Thai hospital sewage phage panel,17
+Thai_sewage_phage_set,KL2,K2_depolymerase,depolymerase_characterized,Thailand,2021,34222050,,K2 depolymerase expressed and purified from Thai hospital sewage phage panel,17
+unnamed_K2_depolymerase,KL2,not_named,depolymerase_characterized,not_stated,2023,36985241,,K2 depolymerase combined with lytic phage against hypervirulent strain 52145,27
+SF_KL2,KL2,not_named,genome_only,not_stated,2025,39912632,,Genome announcement only,26
+Kiwi;Nika;Pie,KL14,receptor_binding_protein,depolymerase_characterized,not_stated,2026,41586922,10.1007/s00705-025-06489-x,Three Autographivirales phages; recombinant RBPs cleave K14 capsular polysaccharide,28
+K14-2,KL14,not_named,phage_host_confirmed,not_stated,2025,39895935,,Novel lytic phage infecting diverse species; K14 host,29
+unnamed_K54_depolymerases,KL54,three_depolymerases,depolymerase_characterized,not_stated,2025,40732053,,Three depolymerases against K54 capsular type with therapeutic potential,30
+unnamed_K54_phages,KL54,not_named,phage_host_confirmed,not_stated,2023,38149011,,Three novel lytic phages against K54 serotype carbapenem-resistant hypervirulent Kp,31
+IME305,KL47,not_named,phage_host_confirmed,China,2023,37889322,,K47-type Klebsiella phage; genus Teetrevirus,32
+unnamed_ST11_K47_phages,KL47,not_named,phage_host_confirmed,China,2022,35255715,,Lytic phages against ST11 K47 CRKP; resistance mechanisms characterised,33
+vB_KpnM_P-KP2,KL47,not_named,phage_host_confirmed,China,2021,33968007,,Combination therapy with gentamicin against K47 serotype acute pneumonia,34
