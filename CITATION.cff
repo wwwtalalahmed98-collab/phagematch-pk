@@ -14,11 +14,11 @@ authors:
     email: B23S0131BMS004@fbse.paf-iast.edu.pk
     affiliation: "Department of Biological and Health Sciences, Pak-Austria Fachhochschule Institute of Applied Sciences and Technology, Haripur, Pakistan"
     orcid: "https://orcid.org/0009-0006-3132-304X"
-  # TODO: add ORCID for the second author once registered.
   - given-names: Ahmed Hussain
     family-names: Shah
     email: B23S0026BMS001@fbse.paf-iast.edu.pk
     affiliation: "Department of Biological and Health Sciences, Pak-Austria Fachhochschule Institute of Applied Sciences and Technology, Haripur, Pakistan"
+    orcid: "https://orcid.org/0009-0004-1312-320X"
 keywords:
   - Klebsiella pneumoniae
   - bacteriophage
