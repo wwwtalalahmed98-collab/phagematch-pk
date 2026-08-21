@@ -24,7 +24,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt, RGBColor
+from docx.shared import Inches, Pt, RGBColor
 
 from config import DOCS as OUTDIR
 
@@ -123,6 +123,26 @@ def convert(md: str, doc: Document) -> None:
 
         if stripped.startswith("---"):
             flush()
+            i += 1
+            continue
+
+        m_img = re.match(r"^!\[([^\]]*)\]\(([^)]+)\)\s*$", stripped)
+        if m_img:
+            flush()
+            alt, src = m_img.groups()
+            path = (Path(src) if Path(src).is_absolute()
+                    else (OUTDIR / src).resolve())
+            if path.exists():
+                # 6.2 in fits the default Word text column with margins intact;
+                # python-docx scales height proportionally from width alone.
+                doc.add_picture(str(path), width=Inches(6.2))
+                doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            else:
+                # Never silently drop a figure - a missing image must be visible.
+                warn = doc.add_paragraph()
+                r = warn.add_run(f"[MISSING FIGURE: {src}]")
+                r.bold = True
+                r.font.color.rgb = RGBColor(0xC0, 0x39, 0x2B)
             i += 1
             continue
 
