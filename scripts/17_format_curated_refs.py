@@ -54,6 +54,33 @@ def clean(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+# Organism names must be italic wherever they appear, including inside a title.
+# Many Crossref records carry no <i> markup at all, so the markup-driven
+# conversion in clean() leaves those titles in roman.
+_BINOMIALS = ("Klebsiella pneumoniae", "Acinetobacter baumannii",
+              "Escherichia coli", "Pseudomonas aeruginosa",
+              "Staphylococcus aureus", "Salmonella enterica",
+              "Enterobacter cloacae", "Klebsiella oxytoca")
+_ABBREV = ("K. pneumoniae", "A. baumannii", "E. coli", "P. aeruginosa",
+           "S. aureus", "S. enterica", "E. cloacae", "K. oxytoca")
+_TAXON = re.compile(
+    "(" + "|".join(re.escape(t) for t in (*_BINOMIALS, *_ABBREV)) + r"|\bKlebsiella\b)")
+
+
+def italicise_taxa(s: str) -> str:
+    """Wrap organism names in markdown italics, outside existing italic spans.
+
+    The string is split on `*`, so odd-numbered segments are already italic and
+    are left alone; substitution happens only in the roman segments. Binomials
+    are matched before the bare genus, so "Klebsiella pneumoniae" is italicised
+    whole rather than as an italic genus followed by a roman species.
+    """
+    parts = s.split("*")
+    for i in range(0, len(parts), 2):          # even indices are outside italics
+        parts[i] = _TAXON.sub(r"*\1*", parts[i])
+    return "*".join(parts)
+
+
 def load_cache() -> dict[str, dict]:
     seen: dict[str, dict] = {}
     for f in sorted(CACHE.glob("*.txt")):
@@ -247,6 +274,7 @@ def format_ref(a: dict, cr: dict[str, dict] | None = None) -> str:
 
     title = clean(xref.get("title") or a.get("title", "")).rstrip(".")
     title, _changes = sentence_case(title)
+    title = italicise_taxa(title)
     jour = clean((a.get("journal") or {}).get("iso_abbreviation", ""))
     year = (a.get("publication_date") or {}).get("year", "")
     cit = a.get("citation") or {}
@@ -290,6 +318,17 @@ def main() -> int:
     if missing:
         print(f"\nMISSING metadata for {len(missing)} PMIDs - fetch these:")
         print("  " + ",".join(missing))
+
+    # An empty cache - the PubMed tool-results directory belongs to the session
+    # that fetched it and does not survive - would otherwise let this script
+    # cheerfully overwrite a complete reference list with a header and nothing
+    # else. Refuse rather than destroy the output.
+    if not resolved:
+        print(f"\nREFUSING TO WRITE - resolved 0 of {len(pmids)} PMIDs.")
+        print(f"  The PubMed cache at {CACHE} is empty or missing.")
+        print("  Existing outputs left untouched; set PHAGEMATCH_PUBMED_CACHE "
+              "to a directory holding the fetched records, or re-fetch them.")
+        return 1
 
     # Number by first appearance in the curated table, so reference order
     # follows the order a reader meets them in the evidence table.

@@ -24,6 +24,8 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 from config import DOCS as OUTDIR
@@ -55,9 +57,12 @@ def add_runs(par, text: str, bold: bool = False, italic: bool = False) -> None:
         elif piece.startswith("[") and "](" in piece:
             label, url = re.match(r"\[([^\]]+)\]\(([^)]+)\)", piece).groups()
             # Keep the DOI visible: a Word reader cannot hover a markdown link.
-            r = par.add_run(label if label.startswith("10.") else f"{label} ")
+            # But when the label is already the tail of the URL - an ORCID iD
+            # linked to its own resolver - printing both just repeats it.
+            redundant = label.startswith("10.") or url.rstrip("/").endswith(label)
+            r = par.add_run(label if redundant else f"{label} ")
             r.bold, r.italic = bold, italic
-            if not label.startswith("10."):
+            if not redundant:
                 u = par.add_run(url)
                 u.font.size = Pt(9)
         elif piece.startswith("*") and piece.endswith("*"):
@@ -65,6 +70,27 @@ def add_runs(par, text: str, bold: bool = False, italic: bool = False) -> None:
         else:
             r = par.add_run(piece)
             r.bold, r.italic = bold or None, italic or None
+
+
+def absorb_continuation(lines: list[str], i: int, body: str) -> tuple[int, str]:
+    """Pull a list item's wrapped continuation lines into the item itself.
+
+    The manuscript wraps long list items — references especially — across
+    several indented source lines. Treating each as its own paragraph split
+    every reference mid-sentence, so a continuation line (indented, not blank,
+    and not the start of the next item) is joined onto the item it belongs to.
+    """
+    while i < len(lines):
+        nxt = lines[i]
+        if not nxt.strip():
+            break
+        if not nxt[:1].isspace():            # a new block, flush against it
+            break
+        if re.match(r"^\s*(\d+\.|[-*])\s+", nxt):   # the next list item
+            break
+        body += " " + nxt.strip()
+        i += 1
+    return i, body
 
 
 def add_table(doc, rows: list[str]) -> None:
@@ -76,7 +102,9 @@ def add_table(doc, rows: list[str]) -> None:
             body.append(cells)
 
     t = doc.add_table(rows=1, cols=len(header))
-    t.style = "Light Grid Accent 1"
+    # A plain ruled grid. Word's "Accent" styles are coloured and decorative;
+    # journals want an unadorned table.
+    t.style = "Table Grid"
     for i, h in enumerate(header):
         cell = t.rows[0].cells[i]
         cell.text = ""
@@ -88,6 +116,25 @@ def add_table(doc, rows: list[str]) -> None:
         for i, c in enumerate(cells[:len(header)]):
             row.cells[i].text = ""
             add_runs(row.cells[i].paragraphs[0], c)
+
+    # Table cells inherit the body's line spacing and 11pt type, which turns
+    # a compact table into a page of its own. Journals set tables tighter.
+    for r_i, row in enumerate(t.rows):
+        # cantSplit stops a single row breaking mid-cell; keep_with_next on
+        # every row but the last makes Word move the whole table to the next
+        # page rather than stranding the header at the foot of this one.
+        trPr = row._tr.get_or_add_trPr()
+        trPr.append(OxmlElement("w:cantSplit"))
+        if r_i == 0:
+            trPr.append(OxmlElement("w:tblHeader"))   # repeat if it ever splits
+        for cell in row.cells:
+            for p in cell.paragraphs:
+                p.paragraph_format.line_spacing = 1.0
+                p.paragraph_format.space_after = Pt(2)
+                p.paragraph_format.space_before = Pt(2)
+                p.paragraph_format.keep_with_next = r_i < len(t.rows) - 1
+                for run in p.runs:
+                    run.font.size = Pt(9.5)
     doc.add_paragraph()
 
 
@@ -136,7 +183,13 @@ def convert(md: str, doc: Document) -> None:
                 # 6.2 in fits the default Word text column with margins intact;
                 # python-docx scales height proportionally from width alone.
                 doc.add_picture(str(path), width=Inches(6.2))
-                doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                pic = doc.paragraphs[-1]
+                pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                # Hold the figure against the legend that follows it, and drop
+                # the double spacing so the image is not padded off its caption.
+                pic.paragraph_format.keep_with_next = True
+                pic.paragraph_format.line_spacing = 1.0
+                pic.paragraph_format.space_after = Pt(4)
             else:
                 # Never silently drop a figure - a missing image must be visible.
                 warn = doc.add_paragraph()
@@ -148,6 +201,9 @@ def convert(md: str, doc: Document) -> None:
 
         if stripped.startswith("|"):
             flush()
+            # The caption sits immediately above its table; hold them together.
+            if doc.paragraphs:
+                doc.paragraphs[-1].paragraph_format.keep_with_next = True
             block = []
             while i < len(lines) and lines[i].strip().startswith("|"):
                 block.append(lines[i])
@@ -161,17 +217,21 @@ def convert(md: str, doc: Document) -> None:
             flush()
             # Reference lists are numbered explicitly in the source; keep those
             # numerals rather than letting Word renumber them.
+            body = m.group(2)
+            i += 1
+            i, body = absorb_continuation(lines, i, body)
             p = doc.add_paragraph()
             p.paragraph_format.left_indent = Pt(24)
             p.paragraph_format.first_line_indent = Pt(-24)
-            add_runs(p, f"{m.group(1)}. {m.group(2)}")
-            i += 1
+            add_runs(p, f"{m.group(1)}. {body}")
             continue
 
         if stripped.startswith(("- ", "* ")):
             flush()
-            add_runs(doc.add_paragraph(style="List Bullet"), stripped[2:])
+            body = stripped[2:]
             i += 1
+            i, body = absorb_continuation(lines, i, body)
+            add_runs(doc.add_paragraph(style="List Bullet"), body)
             continue
 
         if stripped.startswith(">"):
@@ -187,9 +247,134 @@ def convert(md: str, doc: Document) -> None:
     flush()
 
 
+def style_for_submission(doc: Document) -> None:
+    """Strip Word's theme styling and apply manuscript conventions.
+
+    Out of the box python-docx inherits Word's default theme: a 26pt blue
+    title and blue Calibri Light headings. A manuscript sent to an editor is
+    plain black serif throughout, continuously line-numbered so reviewers can
+    cite a line, and page-numbered.
+    """
+    for name, size, bold in (("Title", 16, True), ("Heading 1", 13, True),
+                             ("Heading 2", 12, True), ("Heading 3", 11, True),
+                             ("Heading 4", 11, True)):
+        if name not in [s.name for s in doc.styles]:
+            continue
+        st = doc.styles[name]
+        st.font.name = "Times New Roman"
+        # Word's built-in heading styles name a *theme* font (asciiTheme=
+        # "majorHAnsi"), which wins over w:ascii and renders them in Calibri
+        # Light whatever font.name says. Drop the theme attributes so the
+        # explicit face applies.
+        rPr = st.element.get_or_add_rPr()
+        rFonts = rPr.get_or_add_rFonts()
+        for attr in ("asciiTheme", "hAnsiTheme", "eastAsiaTheme", "cstheme"):
+            rFonts.attrib.pop(qn(f"w:{attr}"), None)
+        for attr in ("ascii", "hAnsi", "cs"):
+            rFonts.set(qn(f"w:{attr}"), "Times New Roman")
+        st.font.size = Pt(size)
+        st.font.bold = bold
+        st.font.italic = False
+        st.font.color.rgb = RGBColor(0, 0, 0)
+        st.paragraph_format.space_before = Pt(12)
+        st.paragraph_format.space_after = Pt(6)
+        st.paragraph_format.line_spacing = 1.0
+        st.paragraph_format.keep_with_next = True
+        # Word's Title style carries a bottom border from the theme.
+        pPr = st.element.get_or_add_pPr()
+        for bdr in pPr.findall(qn("w:pBdr")):
+            pPr.remove(bdr)
+
+    # Justified text without hyphenation opens rivers of white space, badly so
+    # in the narrow reference column where a DOI cannot break. Word hyphenates
+    # only when asked.
+    settings = doc.settings.element
+    for tag, val in (("w:autoHyphenation", "true"),
+                     ("w:doNotHyphenateCaps", "true")):
+        el = OxmlElement(tag)
+        el.set(qn("w:val"), val)
+        settings.append(el)
+
+    sec = doc.sections[0]
+    # Page number, centred in the footer, as a real Word field.
+    p = sec.footer.paragraphs[0]
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = p.add_run()
+    for el, attrs, text in (("w:fldChar", {"w:fldCharType": "begin"}, None),
+                            ("w:instrText", {"xml:space": "preserve"}, " PAGE "),
+                            ("w:fldChar", {"w:fldCharType": "end"}, None)):
+        e = OxmlElement(el)
+        for k, v in attrs.items():
+            e.set(qn(k), v)
+        if text:
+            e.text = text
+        run._r.append(e)
+    run.font.name = "Times New Roman"
+    run.font.size = Pt(10)
+
+
+def delete(par) -> None:
+    par._element.getparent().remove(par._element)
+
+
+def apply_layout(doc: Document, review: bool) -> None:
+    """Impose journal page layout once the content is in place.
+
+    Done as a pass over the finished document rather than inline, because the
+    rules are positional - what counts as the title block, a figure legend or a
+    reference depends on where a paragraph sits relative to the headings.
+    """
+    paras = doc.paragraphs
+    idx = {p.text.strip().lower(): i for i, p in enumerate(paras)
+           if p.style.name.startswith("Heading")}
+    abstract = idx.get("abstract", 0)
+    refs = idx.get("references", len(paras))
+
+    # Title block: everything above the Abstract heading, centred, single
+    # spaced. The standalone "Authors" heading is scaffolding - the names
+    # under the title already say what they are.
+    for p in paras[:abstract]:
+        if p.style.name.startswith("Heading") and p.text.strip() == "Authors":
+            delete(p)
+            continue
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.line_spacing = 1.0
+        p.paragraph_format.space_after = Pt(6)
+
+    for p in paras[abstract:]:
+        txt = p.text.strip()
+        if p.style.name.startswith("Heading") or not txt:
+            continue
+        # Justified body text, as the exemplar sets it.
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        is_legend = txt.startswith(("Fig. ", "Figure ", "Table "))
+        is_ref = bool(re.match(r"^\d+\.\s", txt)) and paras.index(p) > refs
+        if is_legend or is_ref:
+            # Legends and references are set smaller and tighter than body text
+            # in every journal, and it keeps a legend on its figure's page.
+            p.paragraph_format.line_spacing = 1.0
+            p.paragraph_format.space_after = Pt(6)
+            for run in p.runs:
+                run.font.size = Pt(9.5)
+
+    if not review:
+        return
+    # Review copy: continuous line numbers, as Microbiology Society asks. The
+    # double spacing is set on the Normal style back in main().
+    sectPr = doc.sections[0]._sectPr
+    ln = OxmlElement("w:lnNumType")
+    ln.set(qn("w:countBy"), "1")
+    ln.set(qn("w:start"), "1")
+    ln.set(qn("w:restart"), "continuous")
+    sectPr.append(ln)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--input", type=Path, default=DEFAULT_IN)
+    ap.add_argument("--review", action="store_true",
+                    help="double-spaced with line numbers, for journal review; "
+                         "the default is the single-spaced preprint layout")
     args = ap.parse_args()
 
     md = args.input.read_text(encoding="utf-8")
@@ -198,10 +383,14 @@ def main() -> int:
     style = doc.styles["Normal"]
     style.font.name = "Times New Roman"
     style.font.size = Pt(11)
-    style.paragraph_format.space_after = Pt(6)
-    style.paragraph_format.line_spacing = 2.0   # journals ask for double spacing
+    style.paragraph_format.space_after = Pt(8)
+    # Single spacing reads as a finished paper; review copies go double spaced
+    # with line numbers under --review.
+    style.paragraph_format.line_spacing = 2.0 if args.review else 1.15
 
+    style_for_submission(doc)
     convert(md, doc)
+    apply_layout(doc, args.review)
 
     # Flag the outstanding-information markers in red so they cannot be missed.
     for p in doc.paragraphs:
@@ -209,7 +398,9 @@ def main() -> int:
             for run in p.runs:
                 run.font.color.rgb = RGBColor(0xC0, 0x39, 0x2B)
 
-    out = OUTDIR / (args.input.stem + ".docx")
+    # The two layouts are different documents; they must not overwrite each
+    # other, or building the review copy silently replaces the preprint.
+    out = OUTDIR / (args.input.stem + ("_review" if args.review else "") + ".docx")
     doc.save(out)
     warn = sum(1 for p in doc.paragraphs if "⚠" in p.text)
     print(f"Wrote {out} ({out.stat().st_size/1024:.0f} KB, "

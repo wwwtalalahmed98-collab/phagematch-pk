@@ -38,6 +38,12 @@ STRIP_BLOCKS = [
     re.compile(r"\n\*\(141 words; Microbiology Society journals normally cap "
                r"this at 150\.\* ⚠ \*Confirm\nagainst the current author "
                r"guidelines\.\)\*\n"),
+    # A note to ourselves describing the reference style. It belongs in the
+    # working draft, not in the manuscript an editor reads.
+    re.compile(r"Microbiology Society style: author names bold, first five "
+               r"authors then \*et al\.\*,\njournal abbreviation italic, volume "
+               r"bold, en-dashed page ranges\. In-text\ncitations are "
+               r"square-bracketed numerals — \[1\], \[1, 2\], \[1–4\]\.\s*\n\n"),
     # the optional-acknowledgements note; the section itself is replaced below
     re.compile(r"\*\*Acknowledgements\.\*\* ⚠ \*Optional — add anyone who "
                r"helped but does not meet\nauthorship criteria\.\*\n\n"),
@@ -94,10 +100,10 @@ EDITS: list[tuple[str, str, str]] = [
         "'Bonferroni threshold' is loose; the threshold is the corrected alpha",
     ),
     (
-        "| KL107 | 0.0% | 9.8% (27) | <0.0001 | **0.0002** | robust | — |",
-        "| KL107 | 0.0% | 9.8% (27) | <0.0001 | **0.0002** | robust | "
-        "n/a — absent from the Pakistani cohort |",
-        "a bare dash in the phage column was ambiguous",
+        "| KL107 | 0.0% (0) | 9.8% (27) | <0.0001 | **0.0002** | robust | — |",
+        "| KL107 | 0.0% (0) | 9.8% (27) | <0.0001 | **0.0002** | robust | "
+        "n/a (not in cohort) |",
+        "a bare dash in the phage column was ambiguous; kept short for the cell",
     ),
     (
         "**Author contributions.** ⚠ *Draft below — confirm or correct it; it "
@@ -118,6 +124,13 @@ EDITS: list[tuple[str, str, str]] = [
         "note removed; disclosure retained",
     ),
     (
+        "Talal Ahmed — ORCID [0009-0006-3132-304X](https://orcid.org/0009-0006-3132-304X)\n"
+        "Ahmed Hussain Shah — ORCID [0009-0004-1312-320X](https://orcid.org/0009-0004-1312-320X)",
+        "Talal Ahmed — ORCID [0009-0006-3132-304X](https://orcid.org/0009-0006-3132-304X)\n\n"
+        "Ahmed Hussain Shah — ORCID [0009-0004-1312-320X](https://orcid.org/0009-0004-1312-320X)",
+        "the two ORCID lines ran together into one paragraph",
+    ),
+    (
         "Talal Ahmed¹\\*, Ahmed Hussain Shah¹",
         "Talal Ahmed¹*, Ahmed Hussain Shah¹",
         "backslash escape renders literally in Word; the unicode superscript needs none",
@@ -133,15 +146,19 @@ FIGURE_FILES = {
 
 
 def insert_after_legends(md: str) -> tuple[str, list[str]]:
-    """Append each figure image after the paragraph carrying its legend."""
+    """Place each figure immediately above the paragraph carrying its legend.
+
+    A figure legend belongs beneath its figure; only table captions sit above.
+    Emitting the image first also lets the builder keep the pair on one page.
+    """
     paragraphs = md.split("\n\n")
     out, placed = [], []
     for para in paragraphs:
-        out.append(para)
         for tag, src in FIGURE_FILES.items():
             if para.lstrip().startswith(f"**{tag}**"):
                 out.append(f"![{tag}]({src})")
                 placed.append(tag)
+        out.append(para)
     return "\n\n".join(out), placed
 
 

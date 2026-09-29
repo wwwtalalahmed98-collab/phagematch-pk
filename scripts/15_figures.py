@@ -231,8 +231,11 @@ def figure3(sa: pd.DataFrame, ind: pd.DataFrame) -> None:
     # collapsed one is what survives when each BioProject counts once. Showing
     # both is the point of the figure - the gap between them is the clonality.
     p_raw_x, p_col_x = xmax * 1.06, xmax * 1.30
-    ax.text(p_raw_x, len(d) - 0.45, "p raw", fontsize=6.4, color=INK3)
-    ax.text(p_col_x, len(d) - 0.45, "p collapsed", fontsize=6.4, color=INK)
+    # Italic capital P, matching Microbiology Society style in the text and
+    # Table 1; mathtext is the only way to italicise one glyph in a label.
+    ax.text(p_raw_x, len(d) - 0.45, "$\\it{P}$ raw", fontsize=6.4, color=INK3)
+    ax.text(p_col_x, len(d) - 0.45, "$\\it{P}$ collapsed", fontsize=6.4,
+            color=INK)
     for i, r in d.iterrows():
         raw, col, v = r["p_raw"], r["p_collapsed"], r["verdict"]
         ax.text(p_raw_x, i, f"{raw:.3f}" if raw >= 0.001 else "<0.001",
@@ -262,7 +265,8 @@ def figure3(sa: pd.DataFrame, ind: pd.DataFrame) -> None:
               handlelength=1.2)
     fig.text(0.5, -0.035,
              "* no published phage for this capsule type.    Bars show raw "
-             "frequencies; 'p collapsed' counts each BioProject once per type.\n"
+             "frequencies; '$\\it{P}$ collapsed' counts each BioProject once "
+             "per type.\n"
              "Bold = survives Bonferroni correction (α = 0.003) after "
              "collapsing.  'clonal' = significant only before collapsing.",
              ha="center", fontsize=6.6, color=INK2)
