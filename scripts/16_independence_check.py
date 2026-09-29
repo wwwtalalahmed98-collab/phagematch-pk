@@ -110,6 +110,14 @@ def main() -> int:
     counts = m[KCOL].value_counts()
     all_types = sorted(counts[counts >= 4].index.tolist())
 
+    # The Bonferroni denominator is the number of tests actually performed, not
+    # the handful reported in Table 1. Deriving it here stops the threshold and
+    # the test count drifting apart, which is exactly what happened when it was
+    # hardcoded at 0.003.
+    alpha = 0.05 / len(all_types)
+    print(f"Capsule types tested: {len(all_types)}  "
+          f"(Bonferroni alpha = 0.05/{len(all_types)} = {alpha:.5f})\n")
+
     rows = []
     for label, df in [("raw", m), ("collapsed", ded)]:
         sa = df[df["group"].isin(SOUTH)]
@@ -131,7 +139,7 @@ def main() -> int:
     for k in FOCUS:
         r = df[(df.k_locus == k) & (df["mode"] == "raw")].iloc[0]
         c = df[(df.k_locus == k) & (df["mode"] == "collapsed")].iloc[0]
-        if c["p"] < 0.003:
+        if c["p"] < alpha:
             verdict = "ROBUST"
         elif c["p"] < 0.05:
             verdict = "weakened"
@@ -149,7 +157,7 @@ def main() -> int:
     wide.columns = [f"{a}_{b}" for a, b in wide.columns]
     wide = wide.reset_index()
     wide["verdict"] = [
-        "robust" if cp < 0.003 else
+        "robust" if cp < alpha else
         ("weakened" if cp < 0.05 else
          ("clonal" if rp < 0.05 else "ns"))
         for cp, rp in zip(wide["p_collapsed"], wide["p_raw"])

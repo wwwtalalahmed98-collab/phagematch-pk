@@ -267,7 +267,7 @@ def figure3(sa: pd.DataFrame, ind: pd.DataFrame) -> None:
              "* no published phage for this capsule type.    Bars show raw "
              "frequencies; '$\\it{P}$ collapsed' counts each BioProject once "
              "per type.\n"
-             "Bold = survives Bonferroni correction (α = 0.003) after "
+             "Bold = survives Bonferroni correction (α = 0.05/31 = 0.0016) after "
              "collapsing.  'clonal' = significant only before collapsing.",
              ha="center", fontsize=6.6, color=INK2)
     save(fig, "fig3_geography")

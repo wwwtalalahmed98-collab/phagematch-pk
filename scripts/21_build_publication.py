@@ -75,8 +75,8 @@ EDITS: list[tuple[str, str, str]] = [
         "Results: KL81 collapsed p-value italicised",
     ),
     (
-        "(p = 0.443, 0.158, 0.091 and 0.185)",
-        "(*P* = 0.443, 0.158, 0.091 and 0.185)",
+        "(p = 0.443, 0.122, 0.056, 0.158, 0.091 and 0.185)",
+        "(*P* = 0.443, 0.122, 0.056, 0.158, 0.091 and 0.185)",
         "Results: clonal p-values italicised",
     ),
     (
@@ -93,11 +93,6 @@ EDITS: list[tuple[str, str, str]] = [
         "counts and *p*-values per capsule type",
         "counts and *P*-values per capsule type",
         "Table S5 caption: capital P",
-    ),
-    (
-        "Bonferroni threshold of α = 0.05/16 = 0.003",
-        "Bonferroni-corrected threshold of α = 0.05/16 = 0.003",
-        "'Bonferroni threshold' is loose; the threshold is the corrected alpha",
     ),
     (
         "| KL107 | 0.0% (0) | 9.8% (27) | <0.0001 | **0.0002** | robust | — |",
