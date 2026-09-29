@@ -26,6 +26,7 @@ docs/manuscript_publication.docx
 docs/manuscript_publication_review.docx
 docs/results_draft.md
 docs/cover_letter.md
+docs/cover_letter.docx
 
 # Build products of the manuscript pipeline.
 *.pdf
