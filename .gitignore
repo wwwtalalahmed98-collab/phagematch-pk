@@ -46,3 +46,11 @@ desktop.ini
 
 # Personal career material, not research output.
 docs/cv_entries.md
+
+# Internal working records, not research output. The reviewer list names real
+# people before any editor has approached them; the project story carries
+# costs, decisions and unresolved authorship questions.
+docs/PROJECT-STORY.md
+docs/suggested_reviewers.md
+docs/figures/journal_decision.svg
+
